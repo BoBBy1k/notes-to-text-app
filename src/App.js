@@ -28,56 +28,60 @@ function App() {
   }
 
   const handleClick = () => {
-    setText("Processing...")
-    setConfidence("")
-    console.log("Image Width: " + imgWidth + ", Image Height: " + imgHeight);
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(imageRef.current, 0, 0, imgWidth, imgHeight);
-    console.log(canvas)
-    let dataUrl = canvas.toDataURL("image/jpeg");
+    if (text !== "Processing..."){
+      setText("Processing...")
+      setConfidence("")
+      console.log("Image Width: " + imgWidth + ", Image Height: " + imgHeight);
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(imageRef.current, 0, 0, imgWidth, imgHeight);
+      console.log(canvas)
+      let dataUrl = canvas.toDataURL("image/jpeg");
 
-    Jimp.read(dataUrl, function (err, image) {
-      let imgSize=4
-      setImgWidth(imgWidth*imgSize)
-      setImgHeight(imgHeight*imgSize)
-      let workingWidth=imgWidth*imgSize
-      let workingHeight=imgHeight*imgSize
-      // setImgWidth(imgWidth)
-      // setImgHeight(imgHeight)
-      // let workingWidth=imgWidth
-      // let workingHeight=imgHeight
+      Jimp.read(dataUrl, function (err, image) {
+        let imgSize=4
+        setImgWidth(imgWidth*imgSize)
+        setImgHeight(imgHeight*imgSize)
+        let workingWidth=imgWidth*imgSize
+        let workingHeight=imgHeight*imgSize
+        // setImgWidth(imgWidth)
+        // setImgHeight(imgHeight)
+        // let workingWidth=imgWidth
+        // let workingHeight=imgHeight
 
-      image
-      .resize(workingWidth, workingHeight)
-        .greyscale()
-        .invert()
-
-        .brightness(-.2)
-        .contrast(+.5)
-        .normalize()
-        // .gaussian(1)
-        .getBase64(Jimp.AUTO, function(err, data) {
-          console.log(data);
-          var image = new Image();
-          image.onload = () => { ctx.drawImage(image, 0, 0, workingWidth, workingHeight) }
-          image.src = data
-          Tesseract.recognize(
-            data,'eng',
-            {
-              logger: m => console.log(m)
-            }
-          )
-          .catch (err => {
-            console.error(err);
-          })
-          .then(result => {
-            console.log(result)
-            setConfidence(result.data.confidence + "%")
-            setText(result.data.text);
-          })
-        });
-    });
+        image
+        .resize(workingWidth, workingHeight)
+          // .dither565()
+          .greyscale()
+          .invert()
+          .brightness(-.2)
+          .contrast(+.5)
+          .normalize()
+          // .gaussian(1)
+          // .blur(1)
+          .getBase64(Jimp.AUTO, function(err, data) {
+            console.log(data);
+            var image = new Image();
+            image.onload = () => { ctx.drawImage(image, 0, 0, workingWidth, workingHeight) }
+            image.src = data
+            Tesseract.recognize(
+              data,'eng',
+              {
+                logger: m => console.log(m)
+              }
+            )
+            .catch (err => {
+              console.error(err);
+            })
+            .then(result => {
+              console.log(result)
+              setConfidence(result.data.confidence + "%")
+              setText(result.data.text);
+            })
+          });
+      });
+    }
+    else{console.log("Processing in progress!")}
   }
 
   return (
