@@ -1,6 +1,4 @@
-Note: This is a small weekend project to learn about image processing.
-
-https://notes-to-text-app.herokuapp.com/
+Note: This is a small weekend project to learn about image processing. https://notes-to-text-app.herokuapp.com/
 
 This program is intended to convert notes written on standard white paper into workable text.
 
@@ -15,5 +13,5 @@ Note the image processing is left activated since it has a cool looking demonstr
 It 'could' be converted to use the 'Sharp' node.js package to utilize it's image sharpening functionality that is currently missing from Jimp.
 The limitation being that Sharp needs to run in Node.js and have access to fs. Which would greatly expand the scope of this project.
 It's unknown if sharpening and other features of the package would even improve the OCR's ability to read the image.
-Tesseract.js seems to already do modification to the image under the hood. I suspect the only improvements would be providing a clearer and higher quality image.
+Tesseract.js seems to already do modification to the image under the hood. I suspect the only improvements we could do on our end would be providing a clearer and higher quality image.
 https://github.com/lovell/sharp
