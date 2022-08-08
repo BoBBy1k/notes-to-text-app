@@ -9,27 +9,45 @@ function App() {
   const [confidence, setConfidence] = useState("");
   const [imgWidth, setImgWidth] = useState(0);
   const [imgHeight, setImgHeight] = useState(0);
+  const [buttonStatus, setButtonStatus] = useState("No Image!");
   const canvasRef = useRef(null);
   const imageRef = useRef(null);
 
   useEffect(() => {
-    var currentImage = document.querySelector("#currentImage");
-    var currentImageWidth=0
-    var currentImageHeight=0
-    currentImage.clientWidth === 0 ? currentImageWidth = 640 : currentImageWidth = currentImage.clientWidth;
-    currentImage.clientHeight === 0 ? currentImageHeight = 800 : currentImageHeight = currentImage.clientHeight;
-    setImgWidth(currentImageWidth)
-    setImgHeight(currentImageHeight)
-    console.log("Image Width: " + currentImageWidth + ", Image Height: " + currentImageHeight);
+    setTimeout(() => {
+      var currentImage = document.getElementById('currentImage');
+      console.log(currentImage)
+      var currentImageWidth=0
+      var currentImageHeight=0
+      currentImage.clientWidth === 0 ? console.log("currentImageWidth = 0") : currentImageWidth = currentImage.clientWidth;
+      currentImage.clientHeight === 0 ? console.log("currentImageHeight = 0") : currentImageHeight = currentImage.clientHeight;
+      setImgWidth(currentImageWidth)
+      setImgHeight(currentImageHeight)
+      console.log("Image Width: " + currentImageWidth + ", Image Height: " + currentImageHeight);
+      if (currentImageWidth !== 0 && currentImageHeight !== 0) setButtonStatus("Do the Thing!")
+    }, 1000);
   }, [image]);
 
   const handleChange = (event) => {
-    setImage(URL.createObjectURL(event.target.files[0]))
+    let newImage = URL.createObjectURL(event.target.files[0])
+    console.log(newImage)
+    setImage(newImage)
   }
 
   const handleClick = () => {
+    if (buttonStatus === "No Image!") {
+      alert("Select an Image!")
+      return 1
+    }
+
+    if (imgWidth===0 || imgHeight===0) {
+      alert("Image Size Error")
+      return 1
+    }
+
     if (text !== "Processing..."){
       setText("Processing...")
+      setButtonStatus("Processing...")
       setConfidence("")
       console.log("Image Width: " + imgWidth + ", Image Height: " + imgHeight);
       const canvas = canvasRef.current;
@@ -39,7 +57,7 @@ function App() {
       let dataUrl = canvas.toDataURL("image/jpeg");
 
       Jimp.read(dataUrl, function (err, image) {
-        let imgSize=4
+        let imgSize=2
         setImgWidth(imgWidth*imgSize)
         setImgHeight(imgHeight*imgSize)
         let workingWidth=imgWidth*imgSize
@@ -54,8 +72,8 @@ function App() {
           // .dither565()
           .greyscale()
           .invert()
-          .brightness(-.2)
-          .contrast(+.5)
+          .brightness(-.1)
+          .contrast(+.3)
           .normalize()
           // .gaussian(1)
           // .blur(1)
@@ -77,6 +95,7 @@ function App() {
               console.log(result)
               setConfidence(result.data.confidence + "%")
               setText(result.data.text);
+              setButtonStatus("Do the Thing!")
             })
           });
       });
@@ -87,17 +106,19 @@ function App() {
   return (
     <div className="App">
       <input accept='image/*' id='icon-button-file' type='file' capture='environment' onChange={handleChange} style={ {marginTop: 50 }}/>
-      <button onClick={handleClick} style={{height:30, borderRadius: 10}}>Do The Thing!</button>
+      <button onClick={handleClick} style={{height:30, borderRadius: 10}}>{buttonStatus}</button>
         <h3>Confidence Level: {confidence}</h3>
         <h3>Extracted text (Editable)</h3>
         <div>
           <span className="editableBox" contenteditable="true" onChange={ (e)=>{setText(e.target.value)}}>{text}</span>
         </div>
         <h3>Uploaded Image</h3>
+        <div>
         <img
-           src={image} className="App-logo" alt="Nothing Uploaded!" id="currentImage"
-           ref={imageRef}
+           src={image} alt="Nothing Uploaded!"
+           ref={imageRef} className="currentImage" id='currentImage'
            />
+        </div>
         <h3>Modified Image</h3>
         <canvas ref={canvasRef} width={imgWidth} height={imgHeight}></canvas>
     </div>

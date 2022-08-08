@@ -6,6 +6,11 @@
   height: 40vmin;
 }
 
+.currentImage {
+  /* height: 40vmin;
+  width: 40vmin; */
+}
+
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
