@@ -1,4 +1,5 @@
-#Note To Text App (Octical Character Recognition)
+# Note To Text App (Octical Character Recognition)
+
 
 Note: This is a small project to learn about image processing. https://notes-to-text-app.herokuapp.com/
 
